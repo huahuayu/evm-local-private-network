@@ -8,11 +8,11 @@ Specific the `geth` client path in `_param.sh`.
 
 ## Get started
 
-- start network: `./start.sh`;
+- start network: `./start.sh`
 - execute cmd: `./exec.sh eth.blockNumber`
 - attach console `./attach.sh`
-- stop network: `./stop.sh`;
-- clean data and logs: `./clean.sh`;
+- stop network: `./stop.sh`
+- clean data and logs: `./clean.sh`
 
 ## Per-funded address
 
