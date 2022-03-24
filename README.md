@@ -1,12 +1,18 @@
-# Ethereum local private network
+# BSC local private network
 
-Scripts to build ethereum local private network.
+Scripts to build bsc local private network.
 
 By default, it's a 3 node (all of them are miner) network connect with each other.
 
 ## Modify params
 
-Specific the `geth` client path in `_param.sh`.
+Specific the `bsc` client path in `_param.sh`.
+
+## Genesis file
+
+The genesis file is copied from the [official site](https://docs.binance.org/smart-chain/developer/deploy/local.html) but it's not the production genesis file.
+
+Get the production genesis file in github release page.
 
 ## Get started
 
@@ -18,7 +24,7 @@ Specific the `geth` client path in `_param.sh`.
 
 ## Per-funded address
 
-100 eth per-funded:
+100 bnb per-funded:
 
 address: 0x66615f83A1FE0A17166ddD4E1FE086c733937552
 

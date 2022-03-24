@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 cd $(dirname $0)
-rm -fr node*.datadir
-rm *.log
+bash stop.sh &> /dev/null
+rm -fr node*.datadir &> /dev/null
+rm *.log &> /dev/null
