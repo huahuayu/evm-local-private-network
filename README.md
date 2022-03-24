@@ -1,12 +1,18 @@
-# Ethereum local private network
+# Evm local private network
 
-Scripts to build ethereum local private network.
+Scripts to build evm chain local private network.
 
 By default, it's a 3 node (all of them are miner) network connect with each other.
 
+Supported chain (check out git branchs):
+
+- Ethereum (master branch)
+- Bsc
+- Fantom
+
 ## Modify params
 
-Specific the `geth` client path in `_param.sh`.
+Specific the node client path in `_param.sh`.
 
 ## Get started
 
