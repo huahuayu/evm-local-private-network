@@ -1,18 +1,18 @@
-# BSC local private network
+# Evm local private network
 
-Scripts to build bsc local private network.
+Scripts to build evm chain local private network.
 
 By default, it's a 3 node (all of them are miner) network connect with each other.
 
+Supported chain (check out git branchs):
+
+- Ethereum (master branch)
+- Bsc
+- Fantom
+
 ## Modify params
 
-Specific the `bsc` client path in `_param.sh`.
-
-## Genesis file
-
-The genesis file is copied from the [official site](https://docs.binance.org/smart-chain/developer/deploy/local.html) but it's not the production genesis file.
-
-Get the production genesis file in github release page.
+Specific the node client path in `_param.sh`.
 
 ## Get started
 
@@ -24,7 +24,7 @@ Get the production genesis file in github release page.
 
 ## Per-funded address
 
-100 bnb per-funded:
+100 eth per-funded:
 
 address: 0x66615f83A1FE0A17166ddD4E1FE086c733937552
 
