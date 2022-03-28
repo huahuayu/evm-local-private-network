@@ -2,7 +2,7 @@
 
 Scripts to build evm chain local private network.
 
-By default, it's a 3 node (all of them are miner) network connect with each other.
+By default, it's a 3 node network connect with each other, the first node is miner.
 
 Supported chain (check out git branchs):
 

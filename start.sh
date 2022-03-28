@@ -18,14 +18,25 @@ do
     RPCP=$(($RPCP_BASE+$i))
     WSP=$(($WSP_BASE+$i))
     cat /dev/null > node$i.log
-    ($CLIENT \
-	--datadir=${DATADIR} \
-	--port=${PORT} \
-	--nat "extip:127.0.0.1" \
-    --mine --miner.etherbase="${ETHERBASE:-"0x888C2Cb5EE08F77f8D2d308E4E9554C101e04C2c"}" --miner.threads=2 \
-	--http --http.addr="127.0.0.1" --http.port=${RPCP} --http.corsdomain="*" --http.api="eth,debug,net,admin,web3,personal,txpool" \
-	--ws --ws.addr="127.0.0.1" --ws.port=${WSP} --ws.origins="*" --ws.api="eth,debug,net,admin,web3,personal,txpool" \
-	--nousb --verbosity=3 >> node$i.log 2>&1)&
+    if [[ $i = 0 ]]
+    then
+        ($CLIENT \
+        --datadir=${DATADIR} \
+        --port=${PORT} \
+        --nat "extip:127.0.0.1" \
+        --mine --miner.etherbase="${ETHERBASE:-"0x888C2Cb5EE08F77f8D2d308E4E9554C101e04C2c"}" --miner.threads=2 \
+        --http --http.addr="127.0.0.1" --http.port=${RPCP} --http.corsdomain="*" --http.api="eth,debug,net,admin,web3,personal,txpool" \
+        --ws --ws.addr="127.0.0.1" --ws.port=${WSP} --ws.origins="*" --ws.api="eth,debug,net,admin,web3,personal,txpool" \
+        --nousb --verbosity=3 >> node$i.log 2>&1)&
+    else
+        ($CLIENT \
+        --datadir=${DATADIR} \
+        --port=${PORT} \
+        --nat "extip:127.0.0.1" \
+        --http --http.addr="127.0.0.1" --http.port=${RPCP} --http.corsdomain="*" --http.api="eth,debug,net,admin,web3,personal,txpool" \
+        --ws --ws.addr="127.0.0.1" --ws.port=${WSP} --ws.origins="*" --ws.api="eth,debug,net,admin,web3,personal,txpool" \
+        --nousb --verbosity=3 >> node$i.log 2>&1)&
+    fi
     echo -e "\tnode$i ok"
 done
 
