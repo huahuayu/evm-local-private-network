@@ -16,6 +16,12 @@ C chain address: 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
 
 C chain private key: 0x56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027
 
+## Default C chain config
+
+https://docs.avax.network/build/references/avalanchego-config-flags/#c-chain-configs
+
+```
+
 ## C chain Rpc & websockts
 
 Node0:
@@ -55,3 +61,4 @@ convert x-chain private to c-chain private key:
 - https://github.com/ava-labs/avalanche-docs/issues/661
 
 integrate-with-metamask: https://docs.avax.network/build/tutorials/platform/fund-a-local-test-network/#integrate-with-metamask
+```

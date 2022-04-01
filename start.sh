@@ -2,7 +2,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 cd `dirname $0`
 if [[ ! -e avalanchego ]]
@@ -38,7 +37,7 @@ cat > ~/.avalanchego/chains/C/config.json <<EOF
   "tx-pool-api-enabled": true,
   "debug-api-enabled": true,
   "web3-api-enabled": true,
-  "local-txs-enabled": false,
+  "local-txs-enabled": true,
   "pruning-enabled": false,
   "api-max-duration": 0,
   "api-max-blocks-per-request": 0,
