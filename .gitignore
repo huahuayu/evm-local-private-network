@@ -1,2 +1,3 @@
-node*.datadir
+db
 node*.log
+avalanchego

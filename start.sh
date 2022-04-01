@@ -1,84 +1,132 @@
 #!/usr/bin/env bash
-cd $(dirname $0)
-. ./_params.sh
+set -o errexit
+set -o nounset
+set -o pipefail
+set -x
 
-set -e
+cd `dirname $0`
+if [[ ! -e avalanchego ]]
+then
+    git clone https://github.com/ava-labs/avalanchego.git
+fi
 
-echo -e "\nStart $N nodes:\n"
+cd avalanchego
+rm -rf build
+if [[ $# -gt 0 ]]
+then
+    git pull origin master
+    git fetch --tags
+    git checkout tags/$1 
+    bash scripts/build.sh
+else
+    git pull origin master
+    bash scripts/build.sh
+fi
 
-rm -f ./transactions.rlp
-for ((i=0;i<$N;i+=1))
-do
-    DATADIR="${PWD}/node$i.datadir"
-    rm -fr ${DATADIR}
-    mkdir -p ${DATADIR}
-    $CLIENT init genesis.json --datadir=${DATADIR}
+mkdir -p ~/.avalanchego/chains/C
 
-    PORT=$(($PORT_BASE+$i))
-    RPCP=$(($RPCP_BASE+$i))
-    WSP=$(($WSP_BASE+$i))
-    cat /dev/null > node$i.log
-    ($CLIENT \
-	--datadir=${DATADIR} \
-	--port=${PORT} \
-	--nat "extip:127.0.0.1" \
-    --mine --miner.etherbase="${ETHERBASE:-"0x888C2Cb5EE08F77f8D2d308E4E9554C101e04C2c"}" --miner.threads=2 \
-	--http --http.addr="127.0.0.1" --http.port=${RPCP} --http.corsdomain="*" --http.api="eth,debug,net,admin,web3,personal,txpool" \
-	--ws --ws.addr="127.0.0.1" --ws.port=${WSP} --ws.origins="*" --ws.api="eth,debug,net,admin,web3,personal,txpool" \
-	--nousb --verbosity=3 >> node$i.log 2>&1)&
-    echo -e "\tnode$i ok"
-done
-
-attach_and_exec() {
-    local i=$1
-    local CMD=$2
-    local RPCP=$(($RPCP_BASE+$i))
-
-    for attempt in $(seq 40)
-    do
-        if (( attempt > 5 ));
-        then 
-            echo "  - attempt ${attempt}: " >&2
-        fi;
-
-        res=$($CLIENT --exec "${CMD}" attach http://127.0.0.1:${RPCP} 2> /dev/null)
-        if [ $? -eq 0 ]
-        then
-            #echo "success" >&2
-            echo $res
-            return 0
-        else
-            #echo "wait" >&2
-            sleep 1
-        fi
-    done
-    echo "failed RPC connection to ${NAME}" >&2
-    return 1
+cat > ~/.avalanchego/chains/C/config.json <<EOF
+{
+  "snowman-api-enabled": false,
+  "coreth-admin-api-enabled": false,
+  "coreth-performance-api-enabled": false,
+  "net-api-enabled": true,
+  "rpc-gas-cap": 2500000000,
+  "rpc-tx-fee-cap": 100,
+  "eth-api-enabled": true,
+  "personal-api-enabled": false,
+  "tx-pool-api-enabled": true,
+  "debug-api-enabled": true,
+  "web3-api-enabled": true,
+  "local-txs-enabled": false,
+  "pruning-enabled": false,
+  "api-max-duration": 0,
+  "api-max-blocks-per-request": 0,
+  "allow-unfinalized-queries": true,
+  "log-level": "info",
+  "eth-apis": [
+    "public-eth",
+    "public-eth-filter",
+    "net",
+    "web3",
+    "internal-public-eth",
+    "internal-public-blockchain",
+    "internal-public-transaction-pool"
+  ]
 }
+EOF
 
+(./build/avalanchego --public-ip=127.0.0.1 --http-port=9650 --staking-port=9651 --db-dir=../db/node0 --network-id=local --staking-tls-cert-file=$(pwd)/staking/local/staker1.crt --staking-tls-key-file=$(pwd)/staking/local/staker1.key >> ../node0.log 2>&1)&
+(./build/avalanchego --public-ip=127.0.0.1 --http-port=9652 --staking-port=9653 --db-dir=../db/node1 --network-id=local --bootstrap-ips=127.0.0.1:9651 --bootstrap-ids=NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg --staking-tls-cert-file=$(pwd)/staking/local/staker2.crt --staking-tls-key-file=$(pwd)/staking/local/staker2.key >> ../node1.log 2>&1)&
+(./build/avalanchego --public-ip=127.0.0.1 --http-port=9654 --staking-port=9655 --db-dir=../db/node2 --network-id=local --bootstrap-ips=127.0.0.1:9651 --bootstrap-ids=NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg --staking-tls-cert-file=$(pwd)/staking/local/staker3.crt --staking-tls-key-file=$(pwd)/staking/local/staker3.key >> ../node2.log 2>&1)&
+(./build/avalanchego --public-ip=127.0.0.1 --http-port=9656 --staking-port=9657 --db-dir=../db/node3 --network-id=local --bootstrap-ips=127.0.0.1:9651 --bootstrap-ids=NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg --staking-tls-cert-file=$(pwd)/staking/local/staker4.crt --staking-tls-key-file=$(pwd)/staking/local/staker4.key >> ../node3.log 2>&1)&
+(./build/avalanchego --public-ip=127.0.0.1 --http-port=9658 --staking-port=9659 --db-dir=../db/node4 --network-id=local --bootstrap-ips=127.0.0.1:9651 --bootstrap-ids=NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg --staking-tls-cert-file=$(pwd)/staking/local/staker5.crt --staking-tls-key-file=$(pwd)/staking/local/staker5.key >> ../node4.log 2>&1)&
+echo "node started"
 
-echo -e "\nConnect nodes to ring:\n"
-for ((i=0;i<$N;i+=1))
-do
-    j=$(((i+1) % N))
+echo "wait 20 seconds for bootstraps..."
+sleep 10
 
-    enode=$(attach_and_exec $j 'admin.nodeInfo.enode')
-    echo "p2p address = ${enode}"
+echo "get nodeId: "
+curl -X POST --data '{
+    "jsonrpc": "2.0",
+    "method": "info.getNodeID",
+    "params":{},
+    "id": 1
+}' -H 'content-type:application/json;' 127.0.0.1:9652/ext/info
 
-    res=$(attach_and_exec $i "admin.addPeer(${enode})")
-    echo -e "connecting node-$i to node-$j, result = ${res}\n"
-done
+echo "connected peers: "
+curl -X POST --data '{
+    "jsonrpc":"2.0",
+    "id"     :1,
+    "method" :"info.peers"
+}' -H 'content-type:application/json;' 127.0.0.1:9652/ext/info
 
-echo -n "Check pre-funded address balance: "
+# echo "create user: "
+# curl -X POST --data '{
+#     "jsonrpc":"2.0",
+#     "id"     :1,
+#     "method" :"keystore.createUser",
+#     "params" :{
+#         "username":"user",
+#         "password":"PfC77^%^2F"
+#     }
+# }' -H 'content-type:application/json;' 127.0.0.1:9652/ext/keystore
 
-curl --location -g --request POST "http://127.0.0.1:${RPCP_BASE}" \
+# echo "import key: "
+# curl -X POST --data '{  
+#     "jsonrpc":"2.0",    
+#     "id"     :1,    
+#     "method" :"avax.importKey", 
+#     "params" :{ 
+#         "username" :"user",   
+#         "password":"PfC77^%^2F",    
+#         "privateKey":"PrivateKey-ewoqjP7PxY4yr3iLTpLisriqt94hdyDFNgchSxGGztUrTXtNN"    
+#     }   
+# }' -H 'content-type:application/json;' 127.0.0.1:9652/ext/bc/C/avax
+
+echo "pre-fund c chain address 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC private key 0x56289e99c94b6912bfc12adc093c9b51124f0dc54ac7a766b2bc5ccf558d8027"
+echo "get pre-fund balance: "
+curl --location --request POST 'http://127.0.0.1:9652/ext/bc/C/rpc' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-	"jsonrpc":"2.0",
-	"method":"eth_getBalance",
-	"params":[
-		"0x66615f83A1FE0A17166ddD4E1FE086c733937552", 
-		"latest"
-	],
-	"id":1
+    "jsonrpc": "2.0",
+    "method": "eth_getBalance",
+    "params": [
+        "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",
+        "latest"
+    ],
+    "id": 1
 }'
+
+# echo "get current validators:"
+# curl --location --request POST 'http://127.0.0.1:9652/ext/bc/P' \
+# --header 'Content-Type: application/json' \
+# --data-raw '{
+#     "jsonrpc": "2.0",
+#     "method": "platform.getCurrentValidators",
+#     "params": {
+#         "subnetID":null,
+#         "nodeIDs":[]
+#     },
+#     "id": 1
+# }'
