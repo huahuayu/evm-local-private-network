@@ -4,20 +4,19 @@ Scripts to build evm chain local private network.
 
 By default, it's a 3 node (all of them are miner) network connect with each other.
 
-Supported chain (check out git branchs):
+Supported chains (check out git branchs):
 
 - Ethereum (master branch)
 - Bsc
 - Fantom
-
-## Modify params
-
-Specific the node client path in `_param.sh`.
+- Avalanche
 
 ## Get started
 
+Specify your geth client path in `_param.sh`, by default it's `/usr/local/bin/geth`, then:
+
 - start network: `./start.sh`
-- execute cmd: `./exec.sh eth.blockNumber`
+- execute cmd: `./exec.sh [CMD]` for example `./exec.sh eth.blockNumber`
 - attach console `./attach.sh`
 - stop network: `./stop.sh`
 - clean data and logs: `./clean.sh`
