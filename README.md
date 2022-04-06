@@ -1,14 +1,8 @@
-# Evm local private network
+# BSC local private network
 
-Scripts to build evm chain local private network.
+Scripts to run BSC local private network.
 
-By default, it's a 3 node network connect with each other, the first node is miner.
-
-Supported chain (check out git branchs):
-
-- Ethereum (master branch)
-- Bsc
-- Fantom
+It's a 3 node network connect with each other, the first node is miner.
 
 ## Modify params
 
