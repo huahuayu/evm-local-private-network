@@ -1,3 +1,4 @@
+update: this repo is been archived, transfered to https://github.com/blockchain-private-network
 # Evm local private network
 
 Scripts to build evm chain local private network.
